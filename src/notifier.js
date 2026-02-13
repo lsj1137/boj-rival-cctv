@@ -98,8 +98,10 @@ async function sendSlackMessage(webhookUrl, message) {
 }
 
 function buildSlackMessage(handle, problems) {
-  const lines = problems.slice(0, 5).map((p) => `- ${p.id} - ${p.title} (https://www.acmicpc.net/problem/${p.id})`);
-  return `${handle} solved new problems!\n\n${lines.join('\n')}`;
+  const lines = problems
+    .slice(0, 5)
+    .map((p) => `• ${p.id} - ${p.title}\nhttps://www.acmicpc.net/problem/${p.id}`);
+  return `📌 ${handle} 님이 새 문제를 풀었어요!\n\n${lines.join('\n\n')}`;
 }
 
 async function main() {

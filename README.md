@@ -1,44 +1,68 @@
-﻿# solved.ac rival cctv
+﻿# solved.ac 라이벌 CCTV
 
-GitHub Actions-based rival monitor for solved.ac. No server, no cookies, no login tokens.
+서버 없이 GitHub Actions만으로 동작하는 solved.ac 라이벌 모니터링 템플릿입니다.
+쿠키, 로그인 토큰, `solvedacToken` 같은 민감 정보 없이 동작합니다.
 
-## Installation
+## 설치 방법
 
-1. Fork this repository.
-2. Add repository secret `SLACK_WEBHOOK_URL`.
-3. Keep GitHub Actions enabled.
+1. 이 저장소를 Fork합니다.
+2. Slack Incoming Webhook URL을 발급합니다.
+3. 저장소 Secret에 `SLACK_WEBHOOK_URL`을 추가합니다.
+4. GitHub Actions를 활성화한 상태로 유지합니다.
 
-## Register rivals
+### Slack Webhook URL 추가 방법
 
-1. Open your solved.ac rival page (`/ranking/rival?page=1`).
-2. Copy either JSON response, page HTML, or plain text.
-3. Create a GitHub issue in this repository.
-4. Add label `update-rivals`.
-5. Paste the copied text into the issue body and submit.
+1. Slack에서 알림을 받을 워크스페이스를 선택합니다.
+2. Slack App 관리 페이지에서 Incoming Webhooks를 활성화합니다.
+3. `Add New Webhook to Workspace`를 눌러 채널을 선택하고 Webhook URL을 발급받습니다.
+4. GitHub 저장소로 이동합니다.
+5. `Settings` → `Secrets and variables` → `Actions`로 이동합니다.
+6. `New repository secret`를 눌러 아래처럼 저장합니다.
+   - Name: `SLACK_WEBHOOK_URL`
+   - Secret: 발급받은 Slack Webhook URL 전체 값
 
-`update-rivals` workflow will:
-- Parse handles automatically.
-- Validate handles with `GET /api/v3/user/show?handle={handle}`.
-- Update `rivals.json`.
-- Comment result summary on the issue.
+## 라이벌 등록 방법
 
-## How it works
+1. solved.ac 라이벌 페이지(`https://solved.ac/ranking/rival?page=1`)를 엽니다.
+2. JSON 응답, HTML, 일반 텍스트 중 아무 형식으로 복사합니다.
+3. 이 저장소에서 `Issues` → `New issue`를 누릅니다.
+4. 템플릿 목록에서 `라이벌 업데이트`를 선택합니다.
+5. `붙여넣기 내용`에 복사한 원문을 넣고 이슈를 등록합니다.
 
-- `update-rivals.yml`: triggered by labeled issue event, updates `rivals.json`.
-- `notifier.yml`: runs every 15 minutes (and manual dispatch), compares `rivals.json` with `state.json`, sends Slack notifications for newly solved problems.
-- Duplicate alerts are prevented by `state.json` (`seenProblemIds`).
+이 템플릿은 `update-rivals` 라벨을 자동으로 붙여주므로, 별도 라벨 지정이 필요 없습니다.
+
+`update-rivals` 워크플로우가 자동으로:
+- 핸들 후보를 파싱하고
+- `GET /api/v3/user/show?handle={handle}`로 유효성 검증 후
+- `rivals.json`을 갱신하고
+- Issue에 요약 댓글을 남깁니다.
+
+## 동작 방식
+
+- `update-rivals.yml`
+  - 트리거: Issue 생성/라벨 이벤트
+  - 조건: `update-rivals` 라벨이 있을 때만 실행
+  - 결과: `rivals.json` 갱신 및 Issue 댓글 작성
+- `notifier.yml`
+  - 트리거: 15분마다 cron + 수동 실행(`workflow_dispatch`)
+  - 동작: `rivals.json`의 핸들을 순회하며 solved 증가 여부 확인
+  - 결과: 새로 푼 문제만 Slack으로 전송
+- 중복 알림 방지
+  - `state.json`의 `seenProblemIds`로 이미 알린 문제를 필터링
 
 ## FAQ
 
-### Why no cookies or tokens?
+### 왜 쿠키/토큰을 사용하지 않나요?
 
-The project uses only public solved.ac APIs and copied text from your own rival page. This keeps setup simple and avoids handling sensitive credentials.
+이 프로젝트는 공개 API와 사용자가 직접 복사한 라이벌 페이지 텍스트만 사용합니다.
+민감한 인증 정보를 저장하거나 전달할 필요가 없습니다.
 
-### What if rate limits happen?
+### Rate limit(429)이 발생하면 어떻게 되나요?
 
-API calls use exponential backoff for 429/5xx responses. If some handles still fail, the run continues and processes the remaining handles.
+API 호출에 exponential backoff를 적용했습니다.
+일부 핸들 요청이 실패해도 전체 작업을 중단하지 않고 가능한 항목을 계속 처리합니다.
 
-## File layout
+## 파일 구조
 
 - `.github/workflows/update-rivals.yml`
 - `.github/workflows/notifier.yml`

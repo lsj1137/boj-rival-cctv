@@ -53,12 +53,12 @@ jobs:
             const fs = require('fs');
             const result = JSON.parse(fs.readFileSync('parse-result.json', 'utf8'));
             const body = [
-              'Rivals updated successfully.',
+              '라이벌 목록 업데이트 완료 ✅',
               '',
-              `Input mode: ${result.mode}`,
-              `Total candidates: ${result.stats.totalCandidates}`,
-              `Valid handles: ${result.stats.validated}`,
-              `Dropped: ${result.stats.dropped}`
+              `입력 형식: ${result.mode}`,
+              `총 후보: ${result.stats.totalCandidates}`,
+              `유효 핸들: ${result.stats.validated}`,
+              `제거된 항목: ${result.stats.dropped}`
             ].join('\n');
 
             await github.rest.issues.createComment({
