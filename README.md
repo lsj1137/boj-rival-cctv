@@ -23,9 +23,21 @@
 
 1. Slack에서 알림을 받을 워크스페이스를 선택합니다.
 
+![Select Workspace](/src/images/image.png)
+
 2. Slack App 관리 페이지에서 Incoming Webhooks를 활성화합니다.
 
+![Click Channel Name](/src/images/image-1.png)
+
+![Click Integration Tab](/src/images/image-2.png)
+
+![Add Incoming WebHooks](/src/images/image-3.png)
+
 3. `Add New Webhook to Workspace`를 눌러 채널을 선택하고 Webhook URL을 발급받습니다.
+
+![Search Your Channel](/src/images/image-4.png)
+
+![Copy Webhook URL](/src/images/image-5.png)
 
 4. GitHub 저장소로 이동합니다.
 
