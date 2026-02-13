@@ -1,12 +1,11 @@
 name: 라이벌 업데이트
 description: solved.ac 라이벌 페이지 내용을 붙여넣어 라이벌 목록을 갱신합니다.
 title: "[rivals] 라이벌 목록 업데이트 요청"
-labels:
-  - update-rivals
 body:
   - type: markdown
     attributes:
       value: |
+        <!-- rivals-update -->
         solved.ac 라이벌 페이지에서 복사한 내용을 아래에 붙여넣어 주세요.
         JSON/HTML/텍스트 모두 가능합니다.
 

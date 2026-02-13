@@ -89,11 +89,17 @@ function parseJsonMode(input) {
 
 function parseTextMode(input) {
   const byProfile = [];
-  const profileRegex = /solved\.ac\/profile\/([A-Za-z0-9_]{2,24})/gi;
+  const profileRegex = /(?:https?:\/\/)?solved\.ac\/profile\/([A-Za-z0-9_]{2,24})/gi;
   let match;
 
   while ((match = profileRegex.exec(input)) !== null) {
     byProfile.push(match[1]);
+  }
+
+  const byHandleKey = [];
+  const handleKeyRegex = /"handle"\s*:\s*"([A-Za-z0-9_]{2,24})"/g;
+  while ((match = handleKeyRegex.exec(input)) !== null) {
+    byHandleKey.push(match[1]);
   }
 
   const generic = [];
@@ -102,17 +108,13 @@ function parseTextMode(input) {
     generic.push(match[0]);
   }
 
-  const deny = new Set([
-    'https', 'http', 'solved', 'profile', 'ranking', 'rival', 'page',
-    'true', 'false', 'null', 'items', 'handle', 'isRival', 'reverseRival',
-    'class', 'title', 'style', 'script', 'div', 'span', 'href', 'json'
-  ]);
+  // Prefer high-confidence sources before broad text fallback.
+  const seed = byProfile.length > 0 ? byProfile : (byHandleKey.length > 0 ? byHandleKey : generic);
 
-  const combined = [...byProfile, ...generic]
+  const combined = seed
     .map((v) => v.trim())
     .filter((v) => v.length >= 2 && v.length <= 24)
-    .filter((v) => /[A-Za-z]/.test(v))
-    .filter((v) => !deny.has(v));
+    .filter((v) => /[A-Za-z]/.test(v));
 
   return { mode: 'TEXT', candidates: combined };
 }
