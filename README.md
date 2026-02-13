@@ -57,7 +57,9 @@
 
 1. solved.ac 라이벌 페이지(`https://solved.ac/ranking/rival?page=1`)를 엽니다.
 
-2. JSON 응답, HTML, 일반 텍스트 중 아무 형식으로 복사합니다.
+2. JSON 응답, HTML, 일반 텍스트 중 아무 형식으로 복사합니다. (본인을 제외하고 전부 드래그해서 Ctrl+C 하시면 됩니다.)
+
+![Drag Rivals](/src/images/image-6.png)
 
 3. 이 저장소에서 `Issues` → `New issue`를 누릅니다.
 
