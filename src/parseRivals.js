@@ -4,6 +4,7 @@ const fs = require('fs');
 
 const RESULT_PATH = 'parse-result.json';
 const RIVALS_PATH = 'rivals.json';
+const SELF_HANDLE = (process.env.SELF_HANDLE || '').trim().toLowerCase();
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -135,6 +136,14 @@ function dedupePreserveOrder(values) {
   return out;
 }
 
+function excludeSelfHandle(handles) {
+  if (!SELF_HANDLE) {
+    return handles;
+  }
+
+  return handles.filter((h) => h.toLowerCase() !== SELF_HANDLE);
+}
+
 async function validateHandles(candidates) {
   const valid = [];
   const dropped = [];
@@ -190,14 +199,15 @@ async function main() {
   const parsed = jsonMode || parseTextMode(input);
   const dedupedCandidates = dedupePreserveOrder(parsed.candidates);
   const { valid } = await validateHandles(dedupedCandidates);
+  const finalHandles = excludeSelfHandle(valid);
 
   const stats = {
     totalCandidates: dedupedCandidates.length,
-    validated: valid.length,
-    dropped: Math.max(0, dedupedCandidates.length - valid.length)
+    validated: finalHandles.length,
+    dropped: Math.max(0, dedupedCandidates.length - finalHandles.length)
   };
 
-  writeRivals(valid, stats);
+  writeRivals(finalHandles, stats);
 
   const result = {
     mode: parsed.mode,

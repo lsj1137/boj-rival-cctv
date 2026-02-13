@@ -4,6 +4,7 @@ const fs = require('fs');
 
 const RIVALS_PATH = 'rivals.json';
 const STATE_PATH = 'state.json';
+const SELF_HANDLE = (process.env.SELF_HANDLE || '').trim().toLowerCase();
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -106,7 +107,9 @@ function buildSlackMessage(handle, problems) {
 
 async function main() {
   const rivals = readJsonFile(RIVALS_PATH, { handles: [] });
-  const handles = Array.isArray(rivals.handles) ? rivals.handles : [];
+  const handles = (Array.isArray(rivals.handles) ? rivals.handles : [])
+    .filter((h) => typeof h === 'string')
+    .filter((h) => !SELF_HANDLE || h.toLowerCase() !== SELF_HANDLE);
 
   if (handles.length === 0) {
     console.log('No rivals configured.');

@@ -49,6 +49,10 @@
 
    - Secret: 발급받은 Slack Webhook URL 전체 값
 
+7. (권장) `Variables` 탭에서 `SOLVEDAC_SELF_HANDLE`을 추가합니다.
+   - Value: 내 solved.ac 아이디
+   - 용도: 라이벌 목록/알림에서 본인 아이디를 자동 제외
+
 ## 2. 라이벌 등록 방법
 
 1. solved.ac 라이벌 페이지(`https://solved.ac/ranking/rival?page=1`)를 엽니다.

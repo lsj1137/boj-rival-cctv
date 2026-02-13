@@ -32,6 +32,7 @@ jobs:
         run: node src/parseRivals.js
         env:
           GITHUB_EVENT_PATH: ${{ github.event_path }}
+          SELF_HANDLE: ${{ vars.SOLVEDAC_SELF_HANDLE }}
 
       - name: Commit rivals.json changes
         id: commit
