@@ -21,6 +21,12 @@
    - Name: `SLACK_WEBHOOK_URL`
    - Secret: 발급받은 Slack Webhook URL 전체 값
 
+### 권장 채널 구성 (중요)
+
+- 이 프로젝트는 웹훅으로 채널에 알림을 보내는 구조입니다.
+- 여러 사람이 같은 채널/웹훅을 공유하면 알림이 많이 중복될 수 있습니다.
+- 개인 사용이라면 `나만 있는 Slack 비공개 채널`을 만들고, 그 채널의 웹훅을 연결하는 것을 권장합니다.
+
 ## 라이벌 등록 방법
 
 1. solved.ac 라이벌 페이지(`https://solved.ac/ranking/rival?page=1`)를 엽니다.
