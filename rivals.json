@@ -1,10 +1,24 @@
-﻿{
-  "updatedAt": "1970-01-01T00:00:00Z",
+{
+  "updatedAt": "2026-02-13T13:49:58.217Z",
   "source": "issue",
-  "handles": [],
+  "handles": [
+    "lsj1137",
+    "dbsdnwns11",
+    "hyn4008",
+    "minsjes",
+    "kim010603",
+    "dydwns6837",
+    "boyan",
+    "cutr1005",
+    "songseong88",
+    "sumin110v",
+    "rival",
+    "platinum",
+    "silver"
+  ],
   "stats": {
-    "totalCandidates": 0,
-    "validated": 0,
-    "dropped": 0
+    "totalCandidates": 23,
+    "validated": 13,
+    "dropped": 10
   }
 }
