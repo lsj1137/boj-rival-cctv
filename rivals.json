@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-13T13:49:58.217Z",
+  "updatedAt": "2026-02-13T13:56:10.780Z",
   "source": "issue",
   "handles": [
     "lsj1137",
@@ -11,14 +11,11 @@
     "boyan",
     "cutr1005",
     "songseong88",
-    "sumin110v",
-    "rival",
-    "platinum",
-    "silver"
+    "sumin110v"
   ],
   "stats": {
-    "totalCandidates": 23,
-    "validated": 13,
-    "dropped": 10
+    "totalCandidates": 10,
+    "validated": 10,
+    "dropped": 0
   }
 }
