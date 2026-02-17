@@ -110,7 +110,7 @@
     ]
   },
   "hyn4008": {
-    "solvedCount": 126,
+    "solvedCount": 127,
     "seenProblemIds": [
       "1002",
       "1003",
@@ -165,7 +165,8 @@
       "2096",
       "1629",
       "1946",
-      "2447"
+      "2447",
+      "1931"
     ]
   },
   "minsjes": {
@@ -229,7 +230,7 @@
     ]
   },
   "kim010603": {
-    "solvedCount": 163,
+    "solvedCount": 164,
     "seenProblemIds": [
       "1000",
       "1001",
