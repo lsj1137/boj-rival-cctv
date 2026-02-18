@@ -110,7 +110,7 @@
     ]
   },
   "hyn4008": {
-    "solvedCount": 128,
+    "solvedCount": 129,
     "seenProblemIds": [
       "1002",
       "1003",
@@ -166,11 +166,12 @@
       "1629",
       "1946",
       "2447",
-      "1931"
+      "1931",
+      "1504"
     ]
   },
   "minsjes": {
-    "solvedCount": 192,
+    "solvedCount": 193,
     "seenProblemIds": [
       "1000",
       "1001",
