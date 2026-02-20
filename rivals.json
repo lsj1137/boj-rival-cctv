@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-19T06:13:25.075Z",
+  "updatedAt": "2026-02-20T03:01:37.811Z",
   "source": "issue",
   "handles": [
     "dbsdnwns11",
@@ -13,11 +13,12 @@
     "boyan",
     "cutr1005",
     "songseong88",
-    "sumin110v"
+    "sumin110v",
+    "sheep0415"
   ],
   "stats": {
-    "totalCandidates": 12,
-    "validated": 12,
-    "dropped": 0
+    "totalCandidates": 14,
+    "validated": 13,
+    "dropped": 1
   }
 }
