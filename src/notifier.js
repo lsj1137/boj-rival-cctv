@@ -50,13 +50,18 @@ function readJsonFile(path, fallback) {
   }
 }
 
-function mergeSeenProblemIds(oldIds, newIds, maxSize = 500) {
-  const seen = new Set(oldIds);
+function mergeSeenProblemIds(oldIds, newIds) {
+  const seen = new Set();
+
+  for (const id of oldIds) {
+    seen.add(String(id));
+  }
+
   for (const id of newIds) {
     seen.add(String(id));
   }
 
-  return Array.from(seen).slice(-maxSize);
+  return Array.from(seen);
 }
 
 async function fetchUser(handle) {
@@ -68,22 +73,59 @@ async function fetchUser(handle) {
   return res.json();
 }
 
-async function fetchRecentSolvedProblems(handle) {
+async function fetchAllSolvedProblems(handle) {
   const query = encodeURIComponent(`solved_by:${handle}`);
-  const url = `https://solved.ac/api/v3/search/problem?query=${query}&page=1`;
-  const res = await fetchWithBackoff(url, { headers: { Accept: 'application/json' } });
+  const headers = { Accept: 'application/json' };
+  const byId = new Map();
 
-  if (!res.ok) {
-    return [];
+  let page = 1;
+  let totalCount = null;
+
+  while (true) {
+    const url = `https://solved.ac/api/v3/search/problem?query=${query}&page=${page}`;
+    const res = await fetchWithBackoff(url, { headers });
+
+    if (!res.ok) {
+      throw new Error(`search/problem failed for ${handle} page=${page}: ${res.status}`);
+    }
+
+    const data = await res.json();
+    const items = Array.isArray(data.items) ? data.items : [];
+
+    if (totalCount === null) {
+      const rawCount = Number(data.count || data.totalCount || 0);
+      totalCount = Number.isFinite(rawCount) && rawCount > 0 ? rawCount : 0;
+    }
+
+    for (const item of items) {
+      const id = String(item.problemId || item.id || '');
+      if (!id) {
+        continue;
+      }
+
+      byId.set(id, {
+        id,
+        title: String(item.titleKo || item.title || 'Untitled')
+      });
+    }
+
+    if (items.length === 0) {
+      break;
+    }
+
+    if (totalCount > 0 && byId.size >= totalCount) {
+      break;
+    }
+
+    page += 1;
+
+    // Safety guard for unexpected API behavior.
+    if (page > 300) {
+      break;
+    }
   }
 
-  const data = await res.json();
-  const items = Array.isArray(data.items) ? data.items : [];
-
-  return items.map((item) => ({
-    id: String(item.problemId || item.id || ''),
-    title: String(item.titleKo || item.title || 'Untitled')
-  })).filter((p) => p.id.length > 0);
+  return Array.from(byId.values());
 }
 
 async function sendSlackMessage(webhookUrl, message) {
@@ -99,10 +141,13 @@ async function sendSlackMessage(webhookUrl, message) {
 }
 
 function buildSlackMessage(handle, problems) {
+  const maxPreview = 5;
   const lines = problems
-    .slice(0, 5)
+    .slice(0, maxPreview)
     .map((p) => `• ${p.id} - ${p.title}\nhttps://www.acmicpc.net/problem/${p.id}`);
-  return `📌 ${handle} 님이 새 문제를 풀었어요!\n\n${lines.join('\n\n')}`;
+  const remain = Math.max(0, problems.length - maxPreview);
+  const summary = remain > 0 ? `\n\n… 외 ${remain}개` : '';
+  return `📌 ${handle} 님이 새 문제를 풀었어요!\n\n${lines.join('\n\n')}${summary}`;
 }
 
 async function main() {
@@ -126,12 +171,22 @@ async function main() {
     try {
       const user = await fetchUser(handle);
       const solvedCount = Number(user.solvedCount || 0);
+      const previousSolvedCount = Number(previous.solvedCount || 0);
       const seenProblemIds = Array.isArray(previous.seenProblemIds) ? previous.seenProblemIds.map(String) : [];
+      const seenSet = new Set(seenProblemIds);
 
       let newlySolved = [];
-      if (solvedCount > Number(previous.solvedCount || 0)) {
-        const recentProblems = await fetchRecentSolvedProblems(handle);
-        newlySolved = recentProblems.filter((p) => !seenProblemIds.includes(p.id));
+      let mergedSeenProblemIds = seenProblemIds;
+      const hasCompleteHistory = seenSet.size >= previousSolvedCount;
+
+      if (!hasCompleteHistory) {
+        const allSolvedProblems = await fetchAllSolvedProblems(handle);
+        mergedSeenProblemIds = allSolvedProblems.map((p) => p.id);
+        console.log(`Backfilled solved problems for ${handle}: ${mergedSeenProblemIds.length}`);
+      } else if (solvedCount > previousSolvedCount) {
+        const allSolvedProblems = await fetchAllSolvedProblems(handle);
+        newlySolved = allSolvedProblems.filter((p) => !seenSet.has(p.id));
+        mergedSeenProblemIds = mergeSeenProblemIds(seenProblemIds, allSolvedProblems.map((p) => p.id));
       }
 
       if (newlySolved.length > 0) {
@@ -140,7 +195,7 @@ async function main() {
 
       nextState[handle] = {
         solvedCount,
-        seenProblemIds: mergeSeenProblemIds(seenProblemIds, newlySolved.map((p) => p.id))
+        seenProblemIds: mergedSeenProblemIds
       };
     } catch (error) {
       console.error(`Skipping ${handle}: ${error.message}`);
