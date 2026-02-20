@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -41,4 +43,15 @@ jobs:
 
           git add state.json
           git commit -m "chore: update notifier state"
-          git push
+
+          branch="${GITHUB_REF_NAME:-main}"
+          for i in 1 2 3; do
+            if git push origin "HEAD:${branch}"; then
+              exit 0
+            fi
+
+            git pull --rebase origin "${branch}"
+          done
+
+          echo "Failed to push state.json after retries."
+          exit 1
