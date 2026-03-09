@@ -2,6 +2,7 @@
   "updatedAt": "2026-03-09T05:13:55.602Z",
   "source": "issue",
   "handles": [
+    "lsj1137",
     "dbsdnwns11",
     "axaxax",
     "sunmoon0123",
@@ -19,7 +20,7 @@
   ],
   "stats": {
     "totalCandidates": 15,
-    "validated": 14,
-    "dropped": 1
+    "validated": 15,
+    "dropped": 0
   }
 }
